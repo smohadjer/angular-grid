@@ -1,16 +1,19 @@
 import { Component } from '@angular/core';
 import { AgGridModule } from 'ag-grid-angular'; // Angular Grid Logic
 import { ColDef, GridReadyEvent, CellValueChangedEvent} from 'ag-grid-community'; // Column Definitions Interface
-import { HttpClient } from '@angular/common/http';
 import { CompanyLogoRenderer } from './../logo/'
+import { DataService } from './../data.service';
+import { Item } from './../types';
 
 @Component({
   selector: 'app-grid',
   standalone: true,
   imports: [AgGridModule],
+  providers: [ DataService ],
   templateUrl: './grid.component.html',
   styleUrl: './grid.component.css'
 })
+
 export class GridComponent {
   // Default Column Definitions: Apply configuration across all columns
   defaultColDef: ColDef = {
@@ -23,34 +26,39 @@ export class GridComponent {
 
   // Column Definitions: Defines & controls grid columns.
   colDefs: ColDef[] = [
-    { field: "mission", filter: false  },
+    { field: "_id", filter: false  },
     {
-      field: "company",
-      cellRenderer: CompanyLogoRenderer // Render a custom component
+      field: "saleDate",
+      //cellRenderer: CompanyLogoRenderer // Render a custom component
     },
-    { field: "location" },
-    { field: "date" },
-    {
-      field: "price",
-      valueFormatter: params => { return '$' + params.value.toLocaleString(); } // Format with inline function
+    { field: "storeLocation" },
+    { field: "customer",
+      valueFormatter: params => {
+        return params.value['email'];
+      }
     },
-    { field: "successful" },
-    { field: "rocket" }
+    { field: "items",
+      valueFormatter: params => {
+        let names: string[] = [];
+        params.value.forEach((element: Item) => {
+          names.push(element.name || '');
+        });
+        return names.toString();
+      }
+    },
+    // {
+    //   field: "price",
+    //   valueFormatter: params => { return '$' + params.value.toLocaleString(); } // Format with inline function
+    // },
+    { field: "purchaseMethod"},
+    { field: "couponUsed"}
   ];
 
-  // // Load data into grid when ready
-  // onGridReady(params: GridReadyEvent) {
-  //   this.http
-  //     .get<any[]>('https://www.ag-grid.com/example-assets/space-mission-data.json')
-  //     .subscribe(data => this.rowData = data);
-  // }
-
+  // Load data into grid when ready
   onGridReady(params: GridReadyEvent) {
-    console.log('grid is ready', params);
-
-    this.http
-    .get<any[]>('https://www.ag-grid.com/example-assets/space-mission-data.json')
+    this.dataService.getData('https://api-public-test.vercel.app/api/')
     .subscribe(data => {
+      console.log(data);
       this.rowData = data;
       this.count = data.length;
     });
@@ -61,7 +69,5 @@ export class GridComponent {
     console.log(`New Cell Value: ${event.value}`)
   }
 
-  constructor(private http: HttpClient) {
-
-  }
+  constructor(private dataService: DataService) {}
 }

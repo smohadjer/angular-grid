@@ -1,1 +1,4 @@
-
+:host ag-grid-angular {
+  width: 100%;
+  height: 50vh;
+}

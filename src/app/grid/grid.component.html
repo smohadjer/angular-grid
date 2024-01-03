@@ -1,0 +1,13 @@
+  <!-- The AG Grid component -->
+  <p>Rows: {{count}}</p>
+
+  <ag-grid-angular
+    style="width: 100%; height: 400px;"
+    class="ag-theme-quartz"
+    [rowData]="rowData"
+    [columnDefs]="colDefs"
+    [defaultColDef]="defaultColDef"
+    [pagination]="true"
+    (gridReady)="onGridReady($event)"
+    (cellValueChanged)="onCellValueChanged($event)">
+  </ag-grid-angular>

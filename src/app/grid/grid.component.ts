@@ -1,7 +1,6 @@
 import { Component } from '@angular/core';
 import { AgGridModule } from 'ag-grid-angular'; // Angular Grid Logic
-import { ColDef, GridReadyEvent, CellValueChangedEvent} from 'ag-grid-community'; // Column Definitions Interface
-import { CompanyLogoRenderer } from './../logo/'
+import { ColDef, ColGroupDef, GridReadyEvent, CellValueChangedEvent} from 'ag-grid-community'; // Column Definitions Interface
 import { DataService } from './../data.service';
 import { Item } from './../types';
 
@@ -11,7 +10,7 @@ import { Item } from './../types';
   imports: [AgGridModule],
   providers: [ DataService ],
   templateUrl: './grid.component.html',
-  styleUrl: './grid.component.css'
+  styleUrl: './grid.component.css',
 })
 
 export class GridComponent {
@@ -25,25 +24,35 @@ export class GridComponent {
   count = 0;
 
   // Column Definitions: Defines & controls grid columns.
-  colDefs: ColDef[] = [
-    { field: "_id", filter: false  },
+  colDefs: (ColDef | ColGroupDef)[] = [
+    {
+      field: "_id", filter: false,
+      headerName: "ID"
+    },
     {
       field: "saleDate",
-      //cellRenderer: CompanyLogoRenderer // Render a custom component
     },
     { field: "storeLocation" },
-    { field: "customer",
-      valueFormatter: params => {
-        return params.value['email'];
-      }
+    {
+      headerName: 'Customer Email',
+      field: 'customer.email'
+    },
+    {
+      headerName: 'Customer Gender',
+      field: 'customer.gender'
+    },
+    {
+      headerName: 'Customer Age',
+      field: 'customer.age'
     },
     { field: "items",
+      width: 300,
       valueFormatter: params => {
         let names: string[] = [];
         params.value.forEach((element: Item) => {
           names.push(element.name || '');
         });
-        return names.toString();
+        return names.join(', ');
       }
     },
     // {

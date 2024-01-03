@@ -4,3 +4,11 @@
 @import 'ag-grid-community/styles/ag-grid.css';
 /* Quartz Theme Specific CSS */
 @import 'ag-grid-community/styles/ag-theme-quartz.css';
+
+.ag-header-cell-text {
+  font-weight: bold
+}
+
+.ag-header-container {
+  background: #eee;
+}

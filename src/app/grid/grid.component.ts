@@ -1,14 +1,14 @@
 import { Component } from '@angular/core';
 import { AgGridModule } from 'ag-grid-angular'; // Angular Grid Logic
 import { ColDef, ColGroupDef, GridReadyEvent, CellValueChangedEvent} from 'ag-grid-community'; // Column Definitions Interface
-import { DataService } from './../data.service';
+import { ApiService } from '../apiService';
 import { Item } from './../types';
 
 @Component({
   selector: 'app-grid',
   standalone: true,
   imports: [AgGridModule],
-  providers: [ DataService ],
+  providers: [ ApiService ],
   templateUrl: './grid.component.html',
   styleUrl: './grid.component.css',
 })
@@ -65,9 +65,8 @@ export class GridComponent {
 
   // Load data into grid when ready
   onGridReady(params: GridReadyEvent) {
-    this.dataService.getData(this.dataUrl)
+    this.apiService.get(this.dataUrl)
     .subscribe(data => {
-      console.log(data);
       this.rowData = data;
       this.count = data.length;
     });
@@ -89,5 +88,5 @@ export class GridComponent {
     })
   }
 
-  constructor(private dataService: DataService) {}
+  constructor(private apiService: ApiService) {}
 }

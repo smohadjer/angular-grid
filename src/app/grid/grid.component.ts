@@ -14,6 +14,8 @@ import { Item } from './../types';
 })
 
 export class GridComponent {
+  dataUrl = 'https://api-public-test.vercel.app/api/';
+
   // Default Column Definitions: Apply configuration across all columns
   defaultColDef: ColDef = {
     filter: true,
@@ -26,8 +28,10 @@ export class GridComponent {
   // Column Definitions: Defines & controls grid columns.
   colDefs: (ColDef | ColGroupDef)[] = [
     {
-      field: "_id", filter: false,
-      headerName: "ID"
+      field: "_id",
+      filter: false,
+      headerName: "ID",
+      editable: false
     },
     {
       field: "saleDate",
@@ -55,17 +59,13 @@ export class GridComponent {
         return names.join(', ');
       }
     },
-    // {
-    //   field: "price",
-    //   valueFormatter: params => { return '$' + params.value.toLocaleString(); } // Format with inline function
-    // },
     { field: "purchaseMethod"},
     { field: "couponUsed"}
   ];
 
   // Load data into grid when ready
   onGridReady(params: GridReadyEvent) {
-    this.dataService.getData('https://api-public-test.vercel.app/api/')
+    this.dataService.getData(this.dataUrl)
     .subscribe(data => {
       console.log(data);
       this.rowData = data;
@@ -75,7 +75,18 @@ export class GridComponent {
 
   // Handle cell editing event
   onCellValueChanged = (event: CellValueChangedEvent) => {
-    console.log(`New Cell Value: ${event.value}`)
+    console.log(JSON.stringify(event.data));
+    fetch(this.dataUrl, {
+      method: 'POST',
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({"doc": event.data})
+    })
+    .then(response => response.json())
+    .then(json => {
+      console.log(json);
+    })
   }
 
   constructor(private dataService: DataService) {}

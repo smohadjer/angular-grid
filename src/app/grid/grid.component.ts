@@ -1,6 +1,11 @@
 import { Component } from '@angular/core';
 import { AgGridModule } from 'ag-grid-angular'; // Angular Grid Logic
-import { ColDef, ColGroupDef, GridReadyEvent, CellValueChangedEvent, GridApi } from 'ag-grid-community';
+import { ColDef,
+  ColGroupDef,
+  GridReadyEvent,
+  CellValueChangedEvent,
+  SortDirection,
+  GridApi } from 'ag-grid-community';
 import 'ag-grid-enterprise';
 
 import { ApiService } from '../apiService';
@@ -18,6 +23,9 @@ import { Item } from './../types';
 export class GridComponent {
   dataUrl = 'https://api-public-test.vercel.app/api/';
   gridApi!: GridApi;
+
+  sortingOrder: SortDirection[] = ['desc', 'asc'];
+
 
   // Default Column Definitions: Apply configuration across all columns
   defaultColDef: ColDef = {

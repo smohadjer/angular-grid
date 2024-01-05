@@ -1,5 +1,8 @@
   <!-- The AG Grid component -->
-  <p>Rows: {{count}}</p>
+  <p>Rows: {{count}} &nbsp;
+  <button (click)="groupByLocation()">Group by Store Location</button> &nbsp;
+  <button (click)="reset()">Reset</button>
+  </p>
 
   <ag-grid-angular
     class="ag-theme-quartz"

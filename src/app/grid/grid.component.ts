@@ -1,6 +1,8 @@
 import { Component } from '@angular/core';
 import { AgGridModule } from 'ag-grid-angular'; // Angular Grid Logic
-import { ColDef, ColGroupDef, GridReadyEvent, CellValueChangedEvent} from 'ag-grid-community'; // Column Definitions Interface
+import { ColDef, ColGroupDef, GridReadyEvent, CellValueChangedEvent, GridApi } from 'ag-grid-community';
+import 'ag-grid-enterprise';
+
 import { ApiService } from '../apiService';
 import { Item } from './../types';
 
@@ -15,6 +17,7 @@ import { Item } from './../types';
 
 export class GridComponent {
   dataUrl = 'https://api-public-test.vercel.app/api/';
+  gridApi!: GridApi;
 
   // Default Column Definitions: Apply configuration across all columns
   defaultColDef: ColDef = {
@@ -22,10 +25,6 @@ export class GridComponent {
     editable: true
   };
 
-  rowData: any[] = [];
-  count = 0;
-
-  // Column Definitions: Defines & controls grid columns.
   colDefs: (ColDef | ColGroupDef)[] = [
     {
       field: "_id",
@@ -36,26 +35,36 @@ export class GridComponent {
     {
       field: "saleDate",
     },
-    { field: "storeLocation" },
+    {
+      field: "storeLocation",
+    },
     {
       headerName: 'Customer Email',
-      field: 'customer.email'
+      field: 'customer.email',
+      editable: true
     },
     {
       headerName: 'Customer Gender',
-      field: 'customer.gender'
+      field: 'customer.gender',
+      editable: true
     },
     {
       headerName: 'Customer Age',
-      field: 'customer.age'
+      field: 'customer.age',
+      editable: true
     },
     { field: "items",
       width: 300,
       valueFormatter: params => {
         let names: string[] = [];
-        params.value.forEach((element: Item) => {
-          names.push(element.name || '');
-        });
+        if (params.value) {
+          params.value.forEach((element: Item) => {
+            names.push(element.name || '');
+          });
+        } else {
+          console.warn('field items valueFormatter has problem!')
+        }
+
         return names.join(', ');
       }
     },
@@ -63,13 +72,13 @@ export class GridComponent {
     { field: "couponUsed"}
   ];
 
+  rowData: any[] = [];
+  count = 0;
+
   // Load data into grid when ready
   onGridReady(params: GridReadyEvent) {
-    this.apiService.get(this.dataUrl)
-    .subscribe(data => {
-      this.rowData = data;
-      this.count = data.length;
-    });
+    console.log('grid is ready');
+    this.gridApi = params.api;
   }
 
   // Handle cell editing event
@@ -88,5 +97,39 @@ export class GridComponent {
     })
   }
 
-  constructor(private apiService: ApiService) {}
+  groupByLocation() {
+    // field: "storeLocation",
+    // rowGroup: true,
+    // hide: true,
+    console.log('groupping...');
+    const columnDefs: (ColDef | ColGroupDef)[] = this.gridApi.getColumnDefs()!;
+    columnDefs.forEach((colDef: ColDef, index) => {
+      if (colDef.field === 'storeLocation') {
+        colDef.rowGroup = true;
+        colDef.hide = true;
+      }
+    });
+
+    this.gridApi.setGridOption('columnDefs', columnDefs);
+  }
+
+  reset() {
+    const columnDefs: (ColDef | ColGroupDef)[] = this.gridApi.getColumnDefs()!;
+    console.log(columnDefs);
+    columnDefs.forEach((colDef: ColDef, index) => {
+      if (colDef.field === 'storeLocation') {
+        colDef.rowGroup = false;
+        colDef.hide = false;
+      }
+    });
+    this.gridApi.setGridOption('columnDefs', columnDefs);
+  }
+
+  constructor(private apiService: ApiService) {
+    this.apiService.get(this.dataUrl)
+    .subscribe(data => {
+      this.rowData = data;
+      this.count = data.length;
+    });
+  }
 }

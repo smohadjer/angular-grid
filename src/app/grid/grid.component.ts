@@ -33,7 +33,8 @@ export class GridComponent {
   rowData: any[] = [];
   count = 0;
   defaultColDef: ColDef = {
-    filter: true,
+    //filter: true,
+    filter: 'agTextColumnFilter',
     editable: true
   };
 
@@ -76,6 +77,7 @@ export class GridComponent {
       editable: true,
       cellDataType: 'number',
       cellEditor: 'ageEditor',
+      filter: 'agNumberColumnFilter'
     },
     { field: "items",
       width: 300,

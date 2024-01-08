@@ -121,7 +121,7 @@ export class GridComponent {
         console.log(json);
       })
     } else {
-      alert(`Invalid value: ${event.value}`);
+      console.warn(`Invalid value: ${event.value}`);
     }
   }
 

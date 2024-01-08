@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { AgGridModule } from 'ag-grid-angular'; // Angular Grid Logic
-import { ColDef,
+import {
+  ColDef,
   ColGroupDef,
   GridReadyEvent,
   CellValueChangedEvent,
@@ -31,9 +32,10 @@ export class GridComponent {
   sortingOrder: SortDirection[] = ['desc', 'asc'];
   rowData: any[] = [];
   count = 0;
-  defaultColDef = {
+  defaultColDef: ColDef = {
     filter: true,
-  }
+    editable: true
+  };
 
   columnDefs: (ColDef | ColGroupDef)[] = [
     {

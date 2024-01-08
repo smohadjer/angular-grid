@@ -4,10 +4,11 @@
   <button (click)="reset()">Reset</button>
   </p>
 
-  <ag-grid-angular
+  <ag-grid-angular #myGrid
     class="ag-theme-quartz"
     [rowData]="rowData"
-    [columnDefs]="colDefs"
+    [columnDefs]="columnDefs"
+    [components]="components"
     [sortingOrder]="sortingOrder"
     [defaultColDef]="defaultColDef"
     [pagination]="true"

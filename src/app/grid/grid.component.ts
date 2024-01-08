@@ -5,11 +5,13 @@ import { ColDef,
   GridReadyEvent,
   CellValueChangedEvent,
   SortDirection,
-  GridApi } from 'ag-grid-community';
+  GridApi,
+} from 'ag-grid-community';
 import 'ag-grid-enterprise';
 
 import { ApiService } from '../apiService';
 import { Item } from './../types';
+import { AgeEditor } from './ageEditor';
 
 @Component({
   selector: 'app-grid',
@@ -21,45 +23,52 @@ import { Item } from './../types';
 })
 
 export class GridComponent {
+  components = {
+    'ageEditor': AgeEditor
+  };
   dataUrl = 'https://api-public-test.vercel.app/api/';
   gridApi!: GridApi;
-
   sortingOrder: SortDirection[] = ['desc', 'asc'];
-
-
-  // Default Column Definitions: Apply configuration across all columns
-  defaultColDef: ColDef = {
+  rowData: any[] = [];
+  count = 0;
+  defaultColDef = {
     filter: true,
-    editable: true
-  };
+  }
 
-  colDefs: (ColDef | ColGroupDef)[] = [
-    {
-      field: "_id",
-      filter: false,
-      headerName: "ID",
-      editable: false
-    },
+  columnDefs: (ColDef | ColGroupDef)[] = [
     {
       field: "saleDate",
     },
     {
       field: "storeLocation",
+      editable: true,
+      cellEditorSelector: this.cellEditorSelector,
     },
     {
       headerName: 'Customer Email',
       field: 'customer.email',
-      editable: true
+      editable: true,
+      cellEditorSelector: this.cellEditorSelector,
     },
     {
       headerName: 'Customer Gender',
       field: 'customer.gender',
-      editable: true
+      editable: true,
+      cellEditor: 'agRichSelectCellEditor',
+      cellEditorParams: {
+        values: ['M', 'F'],
+      },
     },
     {
       headerName: 'Customer Age',
       field: 'customer.age',
-      editable: true
+      editable: true,
+      cellDataType: 'number',
+      cellEditor: 'agNumberCellEditor',
+      cellEditorParams: {
+        min: 0,
+        max: 100
+      }
     },
     { field: "items",
       width: 300,
@@ -80,9 +89,6 @@ export class GridComponent {
     { field: "couponUsed"}
   ];
 
-  rowData: any[] = [];
-  count = 0;
-
   // Load data into grid when ready
   onGridReady(params: GridReadyEvent) {
     console.log('grid is ready');
@@ -91,24 +97,26 @@ export class GridComponent {
 
   // Handle cell editing event
   onCellValueChanged = (event: CellValueChangedEvent) => {
-    console.log(JSON.stringify(event.data));
-    fetch(this.dataUrl, {
-      method: 'POST',
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({"doc": event.data})
-    })
-    .then(response => response.json())
-    .then(json => {
-      console.log(json);
-    })
+    const dataString = JSON.stringify({"doc": event.data});
+
+    if (event.value) {
+      fetch(this.dataUrl, {
+        method: 'POST',
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: dataString
+      })
+      .then(response => response.json())
+      .then(json => {
+        console.log(json);
+      })
+    } else {
+      alert(`Invalid value: ${event.value}`);
+    }
   }
 
   groupByLocation() {
-    // field: "storeLocation",
-    // rowGroup: true,
-    // hide: true,
     console.log('groupping...');
     const columnDefs: (ColDef | ColGroupDef)[] = this.gridApi.getColumnDefs()!;
     columnDefs.forEach((colDef: ColDef, index) => {

@@ -41,14 +41,12 @@ export class GridComponent {
     },
     {
       field: "storeLocation",
-      editable: true,
-      cellEditorSelector: this.cellEditorSelector,
+      editable: true
     },
     {
       headerName: 'Customer Email',
       field: 'customer.email',
-      editable: true,
-      cellEditorSelector: this.cellEditorSelector,
+      editable: true
     },
     {
       headerName: 'Customer Gender',

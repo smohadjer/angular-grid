@@ -49,7 +49,7 @@ export class GridComponent {
       editable: true
     },
     {
-      headerName: 'Customer Gender',
+      headerName: 'Gender',
       field: 'customer.gender',
       editable: true,
       cellEditor: 'agRichSelectCellEditor',
@@ -57,16 +57,23 @@ export class GridComponent {
         values: ['M', 'F'],
       },
     },
+    // {
+    //   headerName: 'Customer Age',
+    //   field: 'customer.age',
+    //   editable: true,
+    //   cellDataType: 'number',
+    //   cellEditor: 'agNumberCellEditor',
+    //   cellEditorParams: {
+    //     min: 0,
+    //     max: 100
+    //   }
+    // },
     {
-      headerName: 'Customer Age',
+      headerName: 'Age',
       field: 'customer.age',
       editable: true,
       cellDataType: 'number',
-      cellEditor: 'agNumberCellEditor',
-      cellEditorParams: {
-        min: 0,
-        max: 100
-      }
+      cellEditor: 'ageEditor',
     },
     { field: "items",
       width: 300,
